@@ -4,7 +4,8 @@ OBJS_DIR = objs
 
 SRCSBONUS_DIR = srcs_bonus
 
-SRCS	=	pipex.c
+SRCS	=	pipex.c \
+			get_path.c
 
 SRCS_BONUS =	checker_bonus.c \
 				get_stack_bonus.c \

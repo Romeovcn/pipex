@@ -1,118 +1,104 @@
 # include "pipex.h"
 
-char **get_paths(char **envp)
+void first_child(t_data data, char **argv, char **envp)
 {
-    int i;
-    char **paths;
+	char **options;
+	char *correct_path;
 
-    i = 0;
-    while (envp[i])
-    {
-        if (envp[i][0] == 'P' && envp[i][1] == 'A' && envp[i][2] == 'T' && envp[i][3] == 'H' && envp[i][4] == '=')
-        {
-            while (*envp[i] != '/')
-                envp[i]++;
-            paths = ft_split(envp[i], ':');
-        }
-        i++;
-    }
-    return (paths);
+	options = ft_split(argv[2], ' ');
+   	correct_path = get_correct_path(data.paths, options[0]);
+	dup2(data.pipe_fd[1], 1);
+	dup2(data.infile_fd, 0);
+    close(data.pipe_fd[0]);
+    close(data.pipe_fd[1]);
+    execve(correct_path, options, envp);
+	//write(2, strerror(errno), ft_strlen(strerror(errno)));
+    //write(2, "\n", 1);
+	exit(1);
 }
 
-char    *get_command_path(char *path, char *command)
+void second_child(t_data data, char **argv, char **envp)
 {
-    char    *command_path;
-    int     i;
-    int     j;
+	char **options;
+	char *correct_path;
 
-    i = 0;
-    j = 0;
-    command_path = malloc(ft_strlen(path) + ft_strlen(command) + 2);
-    while (path[i])
-    {
-        command_path[i] = path[i];
-        i++;
-    }
-    command_path[i] = '/';
-    i++;
-    while (command[j])
-    {
-        command_path[i + j] = command[j];
-        j++;
-    }
-    command_path[i + j] = 0;
-    free(path);
-    return (command_path);
+	options = ft_split(argv[3], ' ');
+	correct_path = get_correct_path(data.paths, options[0]);
+	dup2(data.pipe_fd[0], 0);
+	//dup2(outfile_fd, 1);
+	close(data.pipe_fd[0]);
+  	close(data.pipe_fd[1]);
+    execve(correct_path, options, envp);
+	exit(1);
 }
 
-char *get_correct_path(char **paths, char *command)
+void get_fds(t_data *data, char **argv)
 {
-    char *correct_path;
-    int j;
+	(*data).infile_fd = open(argv[1], O_RDONLY);
+	if ((*data).infile_fd == -1)
+	{
+		// free paths
+		write(2, strerror(errno), ft_strlen(strerror(errno)));
+        write(2, "\n", 1);
+		exit(1);
+	}
+	(*data).outfile_fd = open(argv[4], O_WRONLY);
+	if ((*data).outfile_fd == -1)
+	{
+		// free paths
+		close((*data).infile_fd);
+		write(2, strerror(errno), ft_strlen(strerror(errno)));
+        write(2, "\n", 1);
+		exit(1);
+	}
+    if (pipe((*data).pipe_fd) ==  -1)
+	{
+		ft_printf("Couldn't open pipe.\n");
+        exit(1);
+	}
+}
 
-    correct_path = NULL;
-    j = 0;
-    while (paths[j])
-    {
-        paths[j] = get_command_path(paths[j], command);
-        if (access(paths[j], F_OK | X_OK) == 0 && correct_path == NULL)
-            correct_path = ft_strdup(paths[j]);
-        free(paths[j]);
-        j++;
-    }
-    free(paths);
-    return (correct_path);
+void close_fds(t_data data)
+{
+	close(data.pipe_fd[0]);
+    close(data.pipe_fd[1]);
+	close(data.infile_fd);
+	close(data.outfile_fd);
 }
 
 int main(int argc, char **argv, char **envp)
 {
-    (void)argc;
-    (void)argv;
+	t_data data;
+	char buffer[6];
+	pid_t respid;
+	int status;
 
-    char **paths;
-    char *correct_path;
-    // char *options[3] = {"ls", "-la", NULL};
-    
-    // pid_t pid;
-    // int status;
-    // int pipefd[2];
-    // char buffer[6];
-    paths = get_paths(envp);
-    correct_path = get_correct_path(paths, "cat");
-    printf("CORRECT=%s\n", correct_path);
-    free(correct_path);
-    // execve(paths[j], options, envp);
-    // if (pipe(pipefd) ==  -1)
-    //     return (1);
-
-    // printf("Before fork\n");
-    // pid = fork();
-    // if (pid == -1)
-    //     return (1);
-    // if (pid == 0)
-    // {
-    //     // La valeur de retour de fork est 0, ce qui veut dire qu'on est dans le processus fils
-    //     close(pipefd[0]);
-    //     write(pipefd[1], "Romeo", 5);
-    //     close(pipefd[1]);
-
-    //     printf("---------child fork---------\n");
-    //     printf("pid = %d\n", pid);
-    //     printf("Fils : Je suis le fils, mon pid interne est %d.\n", pid);
-    // }
-    // else if (pid > 0)
-    // {
-    //     // La valeur de retour de fork est différente de 0, ce qui veut dire qu'on est dans le processus père
-    //     wait(&status);
-    //     printf("pid %d terminated\n", status);
-    //     printf("---------parent fork---------\n");
-    //     close(pipefd[1]);
-    //     read(pipefd[0], buffer, 5);
-    //     printf("Le secret est %s\n", buffer);
-    //     close(pipefd[0]);
-    //     printf("pid = %d\n", pid);
-    //     printf("Pere : Je suis le pere, le pid de mon fils est %d.\n", pid);
-    // }
- 
-    return (0);
+	if (argc != 5)
+	{
+		ft_printf("Argument(s) missing or too much arguments\n");
+		exit(1);
+	}
+    data.paths = get_paths(envp);
+	get_fds(&data, argv);
+	data.pid_1 = fork();
+	if (data.pid_1 == -1)
+		return (1);
+	if (data.pid_1 == 0)
+		first_child(data, argv, envp);
+	data.pid_2 = fork();
+	if (data.pid_2 == -1)
+		return (1);
+	if (data.pid_2 == 0)
+		second_child(data, argv, envp);
+	close_fds(data);
+	waitpid(data.pid_1, &status, 0);
+    //if (WEXITSTATUS(status) == 0)
+    //    printf("Parent : It exited successfully, exit code %d %d\n", WEXITSTATUS(status), WIFEXITED(status));
+    //else
+	//{
+    //    printf("Parent : It was interrupted...\n");
+	//	exit(1);
+	//}
+	waitpid(data.pid_2, NULL, 0);
+	ft_printf("Im the parent my PID is %d\n", getpid());
 }
