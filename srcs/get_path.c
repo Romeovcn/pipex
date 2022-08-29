@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:45 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/29 15:56:59 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/08/29 18:35:33 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ char	*get_correct_path(t_data data)
 	paths = data.paths;
 	correct_path = NULL;
 	i = 0;
-	while (paths[i])
+	while (paths[i] && data.options[0])
 	{
 		paths[i] = get_command_path(paths[i], data.options[0]);
 		if (access(paths[i], F_OK | X_OK) == 0 && correct_path == NULL)
