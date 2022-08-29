@@ -5,15 +5,11 @@ OBJS_DIR = objs
 SRCSBONUS_DIR = srcs_bonus
 
 SRCS	=	pipex.c \
-			get_path.c
+			get_path.c \
+			free_and_exit.c \
+			error.c
 
-SRCS_BONUS =	checker_bonus.c \
-				get_stack_bonus.c \
-				check_error_bonus.c \
-				utils_bonus.c \
-				operations_stack_a_bonus.c \
-				operations_stack_b_bonus.c \
-				operations_reverse_bonus.c \
+SRCS_BONUS =
 
 LIB = ./libft/libft.a
 
@@ -31,7 +27,7 @@ NAME_BONUS = pipex_bonus
 
 CC = gcc
 
-CFLAGS =                      
+CFLAGS = -Werror -Wextra -Wall                
 
 # -- RULES -- #
 

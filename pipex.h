@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 14:52:17 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/28 22:08:20 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/08/29 15:55:35 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,6 @@
 # define PIPEX_H
 
 # include "libft/libft.h"
-# include <errno.h>
 # include <errno.h>
 # include <fcntl.h>
 # include <stdio.h>
@@ -30,7 +29,6 @@ typedef struct s_data
 	pid_t	pid_2;
 
 	int		status;
-	int		status_2;
 
 	int		pipe_fd[2];
 
@@ -38,10 +36,18 @@ typedef struct s_data
 	int		outfile_fd;
 
 	char	**paths;
+	char	*correct_path;
+
+	char	**options;
 }			t_data;
 
 char		**get_paths(char **envp);
 char		*get_command_path(char *path, char *command);
-char		*get_correct_path(char **paths, char *command);
+char		*get_correct_path(t_data data);
+
+void		free_string_array(char **array);
+void		close_fds(t_data data);
+
+void		manage_response_status(t_data data, int status);
 
 #endif
