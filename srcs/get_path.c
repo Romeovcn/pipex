@@ -61,11 +61,11 @@ char *get_correct_path(char **paths, char *command)
         j++;
     }
     free(paths);
-	if (correct_path == NULL)
-	{
-		// only exit one fork !! Need fix
-		ft_printf("Command doesn't exist.\n");
-		exit(1);
-	}
+	//if (correct_path == NULL)
+	//{
+	//	// only exit one fork !! Need fix
+	//	ft_printf("Command doesn't exist.\n");
+	//	exit(1);
+	//}
     return (correct_path);
 }

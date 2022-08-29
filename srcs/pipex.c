@@ -12,8 +12,8 @@ void first_child(t_data data, char **argv, char **envp)
     close(data.pipe_fd[0]);
     close(data.pipe_fd[1]);
     execve(correct_path, options, envp);
-	//write(2, strerror(errno), ft_strlen(strerror(errno)));
-    //write(2, "\n", 1);
+	ft_putstr_fd(strerror(errno), 2);
+    ft_putstr_fd("\n", 2);
 	exit(1);
 }
 
@@ -38,8 +38,8 @@ void get_fds(t_data *data, char **argv)
 	if ((*data).infile_fd == -1)
 	{
 		// free paths
-		write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
+		ft_putstr_fd(strerror(errno), 2);
+        ft_putstr_fd("\n", 2);
 		exit(1);
 	}
 	(*data).outfile_fd = open(argv[4], O_WRONLY);
@@ -47,8 +47,8 @@ void get_fds(t_data *data, char **argv)
 	{
 		// free paths
 		close((*data).infile_fd);
-		write(2, strerror(errno), ft_strlen(strerror(errno)));
-        write(2, "\n", 1);
+		ft_putstr_fd(strerror(errno), 2);
+        ft_putstr_fd("\n", 2);
 		exit(1);
 	}
     if (pipe((*data).pipe_fd) ==  -1)
@@ -92,13 +92,13 @@ int main(int argc, char **argv, char **envp)
 		second_child(data, argv, envp);
 	close_fds(data);
 	waitpid(data.pid_1, &status, 0);
-    //if (WEXITSTATUS(status) == 0)
-    //    printf("Parent : It exited successfully, exit code %d %d\n", WEXITSTATUS(status), WIFEXITED(status));
-    //else
-	//{
-    //    printf("Parent : It was interrupted...\n");
-	//	exit(1);
-	//}
+    if (WEXITSTATUS(status) == 0)
+        printf("Parent : It exited successfully, exit code %d %d\n", WEXITSTATUS(status), WIFEXITED(status));
+    else
+	{
+        printf("Parent : It was interrupted...\n");
+		exit(1);
+	}
 	waitpid(data.pid_2, NULL, 0);
 	ft_printf("Im the parent my PID is %d\n", getpid());
 }
