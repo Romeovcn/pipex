@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/31 22:03:54 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/08/31 22:19:54 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,8 @@ void	get_fds(t_data *data, char **argv)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-
+	char buffer[1000];
+	
 	if (argc != 5)
 	{
 		ft_putstr_fd("Argument(s) missing or too much arguments\n", 2);
