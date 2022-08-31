@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/29 18:31:05 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/08/30 20:31:34 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,15 +14,24 @@
 
 void	first_child(t_data data, char **argv, char **envp)
 {
+	char test[] = "salut";
+	if (ft_strlen(argv[2]) == 0)
+	{
+		//printf("wesh");
+		//write(data.pipe_fd[1], test, 6);
+		//dup2(data.pipe_fd[1], data.infile_fd);
+		close(data.pipe_fd[0]);
+		close(data.pipe_fd[1]);
+		exit(1);
+	} 
 	data.options = ft_split(argv[2], ' ');
 	data.correct_path = get_correct_path(data);
-	// dup2(data.pipe_fd[1], 1);
+	dup2(data.pipe_fd[1], 1);
 	dup2(data.infile_fd, 0);
 	close(data.pipe_fd[0]);
 	close(data.pipe_fd[1]);
-	// execve(data.correct_path, data.options, envp);
-	// exit(1);
-	exit(0);
+	execve(data.correct_path, data.options, envp);
+	exit(1);
 }
 
 void	second_child(t_data data, char **argv, char **envp)
@@ -30,7 +39,7 @@ void	second_child(t_data data, char **argv, char **envp)
 	data.options = ft_split(argv[3], ' ');
 	data.correct_path = get_correct_path(data);
 	dup2(data.pipe_fd[0], 0);
-	dup2(data.outfile_fd, 1);
+	//dup2(data.outfile_fd, 1);
 	close(data.pipe_fd[0]);
 	close(data.pipe_fd[1]);
 	execve(data.correct_path, data.options, envp);
@@ -55,7 +64,8 @@ void	get_fds(t_data *data, char **argv)
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
-
+	char buffer[1000];
+	
 	if (argc != 5)
 	{
 		ft_printf("Argument(s) missing or too much arguments\n");
@@ -68,15 +78,20 @@ int	main(int argc, char **argv, char **envp)
 		return (1);
 	if (data.pid_1 == 0)
 		first_child(data, argv, envp);
-	// data.pid_2 = fork();
-	// if (data.pid_2 == -1)
-	// 	return (1);
-	// if (data.pid_2 == 0)
-	// 	second_child(data, argv, envp);
-	close_fds(data);
 	waitpid(data.pid_1, &data.status, 0);
 	manage_response_status(data, data.status);
-	// waitpid(data.pid_2, &data.status, 0);
-	// manage_response_status(data, data.status);
-	// free_string_array(data.paths);
+	data.pid_2 = fork();
+	if (data.pid_2 == -1)
+		return (1);
+	if (data.pid_2 == 0)
+		second_child(data, argv, envp);
+
+	//ft_bzero(buffer, 1000);
+	//print_pipe_out(data);
+	//read(data.pipe_fd[0], buffer, 1000);
+	//printf("%s", buffer);
+	close_fds(data);
+	waitpid(data.pid_2, &data.status, 0);
+	manage_response_status(data, data.status);
+	free_string_array(data.paths);
 }
