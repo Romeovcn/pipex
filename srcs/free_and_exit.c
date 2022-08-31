@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:48 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/29 15:54:13 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/08/31 21:21:57 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,8 @@ void	free_string_array(char **array)
 	i = 0;
 	while (array[i])
 		free(array[i++]);
-	free(array);
+	if (array)
+		free(array);
 }
 
 void	close_fds(t_data data)

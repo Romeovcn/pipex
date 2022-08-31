@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:45 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/29 18:35:33 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/08/31 21:22:08 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,28 +60,29 @@ char	*get_command_path(char *path, char *command)
 
 char	*get_correct_path(t_data data)
 {
-	char	**paths;
 	char	*correct_path;
 	int		i;
 
-	paths = data.paths;
 	correct_path = NULL;
 	i = 0;
-	while (paths[i] && data.options[0])
+	if (data.options[0] && access(data.options[0], F_OK | X_OK) == 0)
 	{
-		paths[i] = get_command_path(paths[i], data.options[0]);
-		if (access(paths[i], F_OK | X_OK) == 0 && correct_path == NULL)
-			correct_path = ft_strdup(paths[i]);
-		free(paths[i]);
+		correct_path = ft_strdup(data.options[0]);
+		free_string_array(data.paths);
+		return (correct_path);
+	}
+	while (data.paths[i] && data.options[0])
+	{
+		data.paths[i] = get_command_path(data.paths[i], data.options[0]);
+		if (access(data.paths[i], F_OK | X_OK) == 0 && correct_path == NULL)
+			correct_path = ft_strdup(data.paths[i]);
 		i++;
 	}
-	free(paths);
-	i = 0;
+	free_string_array(data.paths);
 	if (correct_path == NULL)
 	{
 		free_string_array(data.options);
-		ft_printf("Command doesn't exist.\n");
-		exit(1);
+		exit(127);
 	}
 	return (correct_path);
 }
