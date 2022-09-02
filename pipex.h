@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 14:52:17 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/29 16:42:03 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/01 18:08:13 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ typedef struct s_data
 
 	int		status;
 
-	int		pipe_fd[2];
+	int		pipe_fd[1024];
 
 	int		infile_fd;
 	int		outfile_fd;

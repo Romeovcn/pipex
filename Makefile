@@ -9,7 +9,10 @@ SRCS	=	pipex.c \
 			free_and_exit.c \
 			error.c
 
-SRCS_BONUS =
+SRCS_BONUS =	pipex_bonus.c \
+				get_path_bonus.c \
+				free_and_exit_bonus.c \
+				error_bonus.c
 
 LIB = ./libft/libft.a
 
@@ -23,7 +26,7 @@ HEADERS_BONUS = pipex_bonus.h
 
 NAME = pipex
 
-NAME_BONUS = pipex_bonus
+NAME_BONUS = pipex
 
 CC = gcc
 
@@ -60,11 +63,9 @@ fclean: clean
 
 re: fclean all
 
-${NAME_BONUS}:  ${OBJS_DIR} ${OBJS_BONUS} ${HEADERS_BONUS} ${LIB}
+bonus: ${OBJS_DIR} ${OBJS_BONUS} ${HEADERS} ${LIB}
 	@${CC} ${CFLAGS} ${OBJS_BONUS} ${LIB} -o ${NAME_BONUS}
 	@echo "Bonus compiled !"
 	@echo ----------------------------
-
-bonus: ${NAME_BONUS}
 
 .PHONY:	all clean fclean re bonus
