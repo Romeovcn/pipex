@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/06 19:56:06 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/08 10:47:12 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,11 +54,19 @@ void	get_fds(t_data *data, char **argv, int argc)
 	//}
 }
 
+//void close_pipe(int *pipe_in, int *pipe_out)
+//{
+//	close(pipe_in[1]);
+//	close(pipe_in[0]);
+//	close(pipe_out[1]);
+//	close(pipe_out[0]);
+//}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
 	int		pipe_fd[2];
-	char 	buffer[1000];
+	char 	buffer[50];
 
 	if (argc < 5)
 	{
@@ -66,73 +74,72 @@ int	main(int argc, char **argv, char **envp)
 		exit(1);
 	}
 	get_fds(&data, argv, argc);
-	data.paths = get_paths(envp);
+	//data.paths = get_paths(envp);
+	//---------------------------------------------------------//
+	//						First child						   //
+	//---------------------------------------------------------//
 	pipe(pipe_fd);
 	data.pid_1 = fork();
 	if (data.pid_1 == -1)
 		return (1);
 	if (data.pid_1 == 0)
 	{
-		char *options[2] = {"cat", NULL};
 		dup2(data.infile_fd, 0);
 		dup2(pipe_fd[1], 1);
 		close(pipe_fd[0]);
 		close(pipe_fd[1]);
+		char *options[2] = {"cat", NULL};
 		execve("/bin/cat", options, envp);
 		exit(1);
 	}
-	waitpid(data.pid_1, &data.status, 0);
-	data.pid_2 = fork();
-	if (data.pid_2 == -1)
-		return (1);
-	if (data.pid_2 == 0)
-	{
-		char *options[3] = {"tail", "-n1", NULL};
-		// dup2(data.infile_fd, 0);
-		// dup2(pipe_fd[1], 1);
-		dup2(pipe_fd[0], 0);
-		close(pipe_fd[0]);
-		// read(pipe_fd[0], buffer, 1000);
-		// printf("%s\n", buffer);
-		close(pipe_fd[1]);
-		execve("/bin/tail", options, envp);
-		exit(0);
-	}
-	// read(pipe_fd[0], buffer, 1000);
-	// printf("%s\n", buffer);
-	// int i = 3;
-	// while (i < argc - 2)
-	// {
-	// 	pipe(pipe_fd);
-	// 	data.pid_1 = fork();
-	// 	if (data.pid_1 == 0)
-	// 	{
-	// 		read(pipe_fd[0], buffer, 1000);
-	// 		printf("PIPE=%s\n", buffer);
-	// 		printf("IM CHILD %s\n", argv[i]);
-	// 		close(pipe_fd[0]);
-	// 		close(pipe_fd[1]);
-	// 		exit(0);
-	// 	}
-	// 	i++;
-	// }
-
+	dup2(pipe_fd[0], 0);
 	close(pipe_fd[0]);
 	close(pipe_fd[1]);
-	waitpid(data.pid_2, &data.status, 0);
+	waitpid(data.pid_1, &data.status, 0);
+	//---------------------------------------------------------//
+	//						Second child					   //
+	//---------------------------------------------------------//
+	pipe(pipe_fd);
+	data.pid_1 = fork();
+	if (data.pid_1 == -1)
+		return (1);
+	if (data.pid_1 == 0)
+	{
+		dup2(pipe_fd[1], 1);
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		char *options[3] = {"tail", "-n1", NULL};
+		execve("/usr/bin/tail", options, envp);
+		exit(1);
+	}
+	dup2(pipe_fd[0], 0);
+	close(pipe_fd[0]);
+	close(pipe_fd[1]);
+	waitpid(data.pid_1, &data.status, 0);
+	//---------------------------------------------------------//
+	//						Third child					  	   //
+	//---------------------------------------------------------//
+	pipe(pipe_fd);
+	data.pid_1 = fork();
+	if (data.pid_1 == -1)
+		return (1);
+	if (data.pid_1 == 0)
+	{
+		dup2(pipe_fd[1], 1);
+		close(pipe_fd[0]);
+		close(pipe_fd[1]);
+		char *options[3] = {"wc", "-w", NULL};
+		execve("/usr/bin/wc", options, envp);
+		exit(1);
+	}
+	close(pipe_fd[1]);
+	waitpid(data.pid_1, &data.status, 0);
+	//---------------------------------------------------------//
+	//						Parent						  	   //
+	//---------------------------------------------------------//
+	read(pipe_fd[0], buffer, 50);
+	printf("%s", buffer);
+	close(pipe_fd[0]);
 	printf("IM THE parent\n");
 	exit(0);
-
-	//waitpid(data.pid_1, &data.status, 0);
-	//manage_response_status(data, data.status);
-	//data.pid_2 = fork();
-	//if (data.pid_2 == -1)
-	//	return (1);
-	//if (data.pid_2 == 0)
-	//	second_child(data, argv, envp);
-	//close_fds(data);
-	//waitpid(data.pid_2, &data.status, 0);
-	//manage_response_status(data, data.status);
-	//free_string_array(data.paths);
-	//exit(WEXITSTATUS(data.status));
 }
