@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/08 10:47:12 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/09 18:06:59 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,32 @@ void	get_fds(t_data *data, char **argv, int argc)
 //	close(pipe_out[0]);
 //}
 
+void create_child_and_exec(t_data *data, char *command, int i, int argc, char **envp)
+{
+	pipe(data->pipe_fd);
+	data->pid_1 = fork();
+	if (data->pid_1 == -1)
+		exit(1);
+	if (data->pid_1 == 0)
+	{
+		data->options = ft_split(command, ' ');
+		data->correct_path = get_correct_path(*data);
+		if (i == argc - 2)
+			dup2(data->outfile_fd, 1);
+		else
+			dup2(data->pipe_fd[1], 1);
+		close(data->pipe_fd[0]);
+		close(data->pipe_fd[1]);
+		execve(data->correct_path, data->options, envp);
+		exit(1);
+	}
+	dup2(data->pipe_fd[0], 0);
+	close(data->pipe_fd[0]);
+	close(data->pipe_fd[1]);
+	waitpid(data->pid_1, &data->status, 0);
+	manage_response_status(*data, data->status);
+}
+
 int	main(int argc, char **argv, char **envp)
 {
 	t_data	data;
@@ -74,72 +100,25 @@ int	main(int argc, char **argv, char **envp)
 		exit(1);
 	}
 	get_fds(&data, argv, argc);
-	//data.paths = get_paths(envp);
+	data.paths = get_paths(envp);
+	dup2(data.infile_fd, 0);
+	
 	//---------------------------------------------------------//
-	//						First child						   //
+	//						While child						   //
 	//---------------------------------------------------------//
-	pipe(pipe_fd);
-	data.pid_1 = fork();
-	if (data.pid_1 == -1)
-		return (1);
-	if (data.pid_1 == 0)
+	int i = 2;
+	while (i < argc - 1)
 	{
-		dup2(data.infile_fd, 0);
-		dup2(pipe_fd[1], 1);
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		char *options[2] = {"cat", NULL};
-		execve("/bin/cat", options, envp);
-		exit(1);
+		//printf("%s\n", argv[i++]);
+		create_child_and_exec(&data, argv[i], i , argc, envp);
+		i++;
 	}
-	dup2(pipe_fd[0], 0);
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
-	waitpid(data.pid_1, &data.status, 0);
-	//---------------------------------------------------------//
-	//						Second child					   //
-	//---------------------------------------------------------//
-	pipe(pipe_fd);
-	data.pid_1 = fork();
-	if (data.pid_1 == -1)
-		return (1);
-	if (data.pid_1 == 0)
-	{
-		dup2(pipe_fd[1], 1);
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		char *options[3] = {"tail", "-n1", NULL};
-		execve("/usr/bin/tail", options, envp);
-		exit(1);
-	}
-	dup2(pipe_fd[0], 0);
-	close(pipe_fd[0]);
-	close(pipe_fd[1]);
-	waitpid(data.pid_1, &data.status, 0);
-	//---------------------------------------------------------//
-	//						Third child					  	   //
-	//---------------------------------------------------------//
-	pipe(pipe_fd);
-	data.pid_1 = fork();
-	if (data.pid_1 == -1)
-		return (1);
-	if (data.pid_1 == 0)
-	{
-		dup2(pipe_fd[1], 1);
-		close(pipe_fd[0]);
-		close(pipe_fd[1]);
-		char *options[3] = {"wc", "-w", NULL};
-		execve("/usr/bin/wc", options, envp);
-		exit(1);
-	}
-	close(pipe_fd[1]);
-	waitpid(data.pid_1, &data.status, 0);
 	//---------------------------------------------------------//
 	//						Parent						  	   //
 	//---------------------------------------------------------//
-	read(pipe_fd[0], buffer, 50);
-	printf("%s", buffer);
-	close(pipe_fd[0]);
+	//read(pipe_fd[0], buffer, 50);
+	//printf("%s", buffer);
+	close(data.pipe_fd[0]);
 	printf("IM THE parent\n");
 	exit(0);
 }
