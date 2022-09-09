@@ -36,8 +36,8 @@ CFLAGS =
 
 ${NAME}: ${OBJS_DIR} ${OBJS} ${HEADERS} ${LIB}
 	@${CC} ${CFLAGS} ${OBJS} ${LIB} -o ${NAME}
-	@echo "Pipex compiled !"
-	@echo ----------------------------
+	@echo "\033[32mPipex compiled !"
+	@echo "----------------------------\033[0m"
 
 all: ${NAME}
 
@@ -65,7 +65,7 @@ re: fclean all
 
 bonus: ${OBJS_DIR} ${OBJS_BONUS} ${HEADERS} ${LIB}
 	@${CC} ${CFLAGS} ${OBJS_BONUS} ${LIB} -o ${NAME_BONUS}
-	@echo "Bonus compiled !"
-	@echo ----------------------------
+	@echo "\033[32mBonus compiled !"
+	@echo "----------------------------\033[0m"
 
 .PHONY:	all clean fclean re bonus
