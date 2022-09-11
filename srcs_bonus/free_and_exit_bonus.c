@@ -6,11 +6,11 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:48 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/09 18:04:26 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/11 21:51:36 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 void	free_string_array(char **array)
 {
@@ -27,6 +27,6 @@ void	close_fds(t_data data)
 {
 	close(data.pipe_fd[0]);
 	close(data.pipe_fd[1]);
-	close(data.infile_fd);
-	close(data.outfile_fd);
+	close(data.in_fd);
+	close(data.out_fd);
 }
