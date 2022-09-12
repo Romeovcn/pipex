@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/12 18:50:33 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/13 00:26:40 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,14 +34,6 @@ void	get_fds(t_data *data, char **argv, int argc)
 		(*data).in_fd = open(argv[1], O_RDONLY);
 	(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	check_fds_error(*data, argv);
-	if (pipe((*data).pipe_fd) == -1)
-	{
-		close((*data).in_fd);
-		close((*data).out_fd);
-		free_string_array((*data).paths);
-		ft_putstr_fd("Couldn't open pipe.\n", 2);
-		exit(1);
-	}
 }
 
 void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
@@ -115,25 +107,11 @@ int	main(int argc, char **argv, char **envp)
 	else
 		i = 2;
 	while (i < argc - 1)
-	{
-		create_child_and_exec(&data, argv, i, envp);
-		i++;
-	}
+		create_child_and_exec(&data, argv, i++, envp);
 	unlink(".here_doc");
 	free_string_array(data.paths);
-
-
-	//int fd;
-	//char buffer[1];
-
-	//fd = open(argv[1], O_RDONLY);
-	//if (fd == -1)
-	//{
-	//	printf("ERROR\n");
-	//	exit (1);
-	//}
-	//while (read(fd, buffer, 1))
-	//	printf("%c", buffer[0]);
-	exit(0);
+	close(data.out_fd);
+	close(data.in_fd);
+	exit(WEXITSTATUS(data.status));
 }
-//valgrind --quiet --track-fds=yes
+//valgrind --track-fds=yes

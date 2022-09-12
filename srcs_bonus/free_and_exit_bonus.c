@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:48 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/12 18:38:59 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/13 00:20:48 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,4 +21,12 @@ void	free_string_array(char **array)
 		free(array[i++]);
 	if (array)
 		free(array);
+}
+
+void	close_fds(t_data data)
+{
+	close(data.pipe_fd[0]);
+	close(data.pipe_fd[1]);
+	close(data.in_fd);
+	close(data.out_fd);
 }
