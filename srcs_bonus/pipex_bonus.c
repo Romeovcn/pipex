@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/11 21:54:18 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/12 18:50:33 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,6 +120,20 @@ int	main(int argc, char **argv, char **envp)
 		i++;
 	}
 	unlink(".here_doc");
+	free_string_array(data.paths);
+
+
+	//int fd;
+	//char buffer[1];
+
+	//fd = open(argv[1], O_RDONLY);
+	//if (fd == -1)
+	//{
+	//	printf("ERROR\n");
+	//	exit (1);
+	//}
+	//while (read(fd, buffer, 1))
+	//	printf("%c", buffer[0]);
 	exit(0);
 }
 //valgrind --quiet --track-fds=yes
