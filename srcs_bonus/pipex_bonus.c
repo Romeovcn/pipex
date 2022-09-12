@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/13 00:26:40 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/13 00:28:50 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,10 +102,9 @@ int	main(int argc, char **argv, char **envp)
 		get_here_doc(data, argv[2]);
 	data.paths = get_paths(envp);
 	dup2(data.in_fd, 0);
+	i = 2;
 	if (ft_strmatch(argv[1], "here_doc"))
 		i = 3;
-	else
-		i = 2;
 	while (i < argc - 1)
 		create_child_and_exec(&data, argv, i++, envp);
 	unlink(".here_doc");
