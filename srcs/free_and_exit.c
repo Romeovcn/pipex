@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:48 by rvincent          #+#    #+#             */
-/*   Updated: 2022/08/31 22:20:28 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/12 21:48:23 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,6 @@ void	close_fds(t_data data)
 {
 	close(data.pipe_fd[0]);
 	close(data.pipe_fd[1]);
-	close(data.infile_fd);
-	close(data.outfile_fd);
+	close(data.in_fd);
+	close(data.out_fd);
 }

@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 14:52:17 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/09 17:53:48 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/12 23:43:55 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ typedef struct s_data
 
 	int		pipe_fd[2];
 
-	int		infile_fd;
-	int		outfile_fd;
+	int		in_fd;
+	int		out_fd;
 
 	char	**paths;
 	char	*correct_path;
@@ -48,7 +48,7 @@ char		*get_correct_path(t_data data);
 void		free_string_array(char **array);
 void		close_fds(t_data data);
 
-void		manage_response_status(t_data data, int status);
+void		manage_response_status(t_data data, char *command);
 void		check_fds_error(t_data data, char **argv);
 
 #endif

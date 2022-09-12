@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 13:13:04 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/11 21:51:21 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/12 21:58:56 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@
 typedef struct s_data
 {
 	pid_t	pid_1;
-	pid_t	pid_2;
 
 	int		status;
 
