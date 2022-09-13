@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 13:13:04 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/12 21:58:56 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/13 19:20:45 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,6 @@ void		free_string_array(char **array);
 void		close_fds(t_data data);
 
 void		manage_response_status(t_data data, char *command);
-void		check_fds_error(t_data data, char **argv);
+void		check_fds_error(t_data data, int argc, char **argv);
 
 #endif

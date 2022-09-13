@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/13 00:28:50 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/13 19:33:05 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	get_fds(t_data *data, char **argv, int argc)
 	else
 		(*data).in_fd = open(argv[1], O_RDONLY);
 	(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
-	check_fds_error(*data, argv);
+	check_fds_error(*data, argc, argv);
 }
 
 void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
@@ -72,7 +72,7 @@ void	get_here_doc(t_data data, char *sep)
 	fd = 0;
 	while (1)
 	{
-		write(1, "heredoc> ", 9);
+		write(1, "pipe heredoc> ", 14);
 		line = get_next_line(fd);
 		if (ft_strmatch(line, sepator) || !line)
 		{

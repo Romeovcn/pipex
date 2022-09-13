@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:57:10 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/12 23:59:47 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/13 19:23:05 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	manage_response_status(t_data data, char *command)
 	}
 }
 
-void	check_fds_error(t_data data, char **argv)
+void	check_fds_error(t_data data, int argc, char **argv)
 {
 	if (data.in_fd == -1)
 	{
@@ -39,7 +39,7 @@ void	check_fds_error(t_data data, char **argv)
 			close(data.in_fd);
 		ft_putstr_fd(strerror(errno), 2);
 		ft_putstr_fd(" : ", 2);
-		ft_putstr_fd(argv[4], 2);
+		ft_putstr_fd(argv[argc - 1], 2);
 		ft_putstr_fd("\n", 2);
 		exit(1);
 	}
