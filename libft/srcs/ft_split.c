@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 11:50:34 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/14 23:08:18 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/14 23:16:21 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ static char	*get_next_word(char const *str, char charset)
 	while (str[i] && str[i] != charset)
 		i++;
 	word = malloc((i + 1) * sizeof(char));
-	// word = NULL;
 	if (word == NULL)
 		return (NULL);
 	i = 0;
