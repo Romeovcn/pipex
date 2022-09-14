@@ -6,11 +6,11 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/11 11:50:34 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/11 15:18:22 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/14 23:08:18 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "../libft.h"
 
 static int	get_array_size(char const *str, char charset)
 {
@@ -38,8 +38,9 @@ static char	*get_next_word(char const *str, char charset)
 	while (str[i] && str[i] != charset)
 		i++;
 	word = malloc((i + 1) * sizeof(char));
+	// word = NULL;
 	if (word == NULL)
-		return (0);
+		return (NULL);
 	i = 0;
 	while (str[i] && str[i] != charset)
 	{
@@ -48,6 +49,18 @@ static char	*get_next_word(char const *str, char charset)
 	}
 	word[i] = 0;
 	return (word);
+}
+
+static int	check_error_exit(char *string, char **result)
+{
+	if (string == NULL)
+	{
+		while (*result)
+			free(*result++);
+		free(result);
+		return (1);
+	}
+	return (0);
 }
 
 char	**ft_split(char const *s, char c)
@@ -66,7 +79,11 @@ char	**ft_split(char const *s, char c)
 		while (*s && *s == c)
 			s++;
 		if (*s != c && *s)
-			result[i++] = get_next_word(s, c);
+		{
+			result[i] = get_next_word(s, c);
+			if (check_error_exit(result[i++], result))
+				return (NULL);
+		}
 		while (*s != c && *s)
 			s++;
 	}
@@ -76,9 +93,16 @@ char	**ft_split(char const *s, char c)
 
 // int	main(void)
 // {
-// 	char **result = ft_split("lorem ipsum dolor sit", ' ');
-// 	printf("%s\n", result[0]);
-//  	printf("%s\n", result[1]);
-//  	printf("%s\n", result[2]);
-// 	free(result);
-//}
+// 	char	**result;
+
+// 	result = ft_split("lorem ipsum dolor sit", ' ');
+// 	for (int i = 0; result[i] ; i++)
+// 	{
+// 		printf("%s\n", result[i]);
+// 		free(result[i]);
+// 	}
+// 	if (!result)
+// 		printf(" OKOKKKKKKK\n");
+// 	else
+// 		free(result);
+// }
