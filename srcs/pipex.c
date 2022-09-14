@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/12 23:48:05 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/14 22:39:10 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	first_child(t_data *data, char **argv, char **envp)
 	if (data->pid_1 == 0)
 	{
 		data->options = ft_split(argv[2], ' ');
+		if (data->options == NULL)
+			exit(1);
 		data->correct_path = get_correct_path(*data);
 		dup2(data->pipe_fd[1], 1);
 		dup2(data->in_fd, 0);
@@ -28,8 +30,6 @@ void	first_child(t_data *data, char **argv, char **envp)
 		execve(data->correct_path, data->options, envp);
 		exit(1);
 	}
-	waitpid(data->pid_1, &data->status, 0);
-	manage_response_status(*data, argv[2]);
 }
 
 void	second_child(t_data *data, char **argv, char **envp)
@@ -40,6 +40,8 @@ void	second_child(t_data *data, char **argv, char **envp)
 	if (data->pid_2 == 0)
 	{
 		data->options = ft_split(argv[3], ' ');
+		if (data->options == NULL)
+			exit(1);
 		data->correct_path = get_correct_path(*data);
 		dup2(data->pipe_fd[0], 0);
 		dup2(data->out_fd, 1);
@@ -48,9 +50,6 @@ void	second_child(t_data *data, char **argv, char **envp)
 		execve(data->correct_path, data->options, envp);
 		exit(1);
 	}
-	close_fds(*data);
-	waitpid(data->pid_2, &data->status, 0);
-	manage_response_status(*data, argv[3]);
 }
 
 void	get_fds(t_data *data, char **argv)
@@ -81,6 +80,11 @@ int	main(int argc, char **argv, char **envp)
 	data.paths = get_paths(envp);
 	first_child(&data, argv, envp);
 	second_child(&data, argv, envp);
+	close_fds(data);
+	waitpid(data.pid_1, &data.status, 0);
+	manage_response_status(data, argv[2]);
+	waitpid(data.pid_2, &data.status, 0);
+	manage_response_status(data, argv[3]);
 	free_string_array(data.paths);
 	exit(WEXITSTATUS(data.status));
 }

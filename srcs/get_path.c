@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:45 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/13 19:27:50 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/14 22:39:13 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@ char	**get_paths(char **envp)
 			while (*envp[i] && *envp[i] != '/')
 				envp[i]++;
 			paths = ft_split(envp[i], ':');
+			if (paths == NULL)
+				exit (1);
 		}
 		i++;
 	}
@@ -41,19 +43,22 @@ char	*get_command_path(char *path, char *command)
 	i = 0;
 	j = 0;
 	command_path = malloc(ft_strlen(path) + ft_strlen(command) + 2);
-	while (path[i])
+	if (command_path != NULL)
 	{
-		command_path[i] = path[i];
+		while (path[i])
+		{
+			command_path[i] = path[i];
+			i++;
+		}
+		command_path[i] = '/';
 		i++;
+		while (command[j])
+		{
+			command_path[i + j] = command[j];
+			j++;
+		}
+		command_path[i + j] = 0;
 	}
-	command_path[i] = '/';
-	i++;
-	while (command[j])
-	{
-		command_path[i + j] = command[j];
-		j++;
-	}
-	command_path[i + j] = 0;
 	free(path);
 	return (command_path);
 }
@@ -70,7 +75,7 @@ char	*get_correct_path(t_data data)
 	while (data.paths[i] && data.options[0] && correct_path == NULL)
 	{
 		data.paths[i] = get_command_path(data.paths[i], data.options[0]);
-		if (access(data.paths[i], F_OK | X_OK) == 0)
+		if (data.paths[i] && access(data.paths[i], F_OK | X_OK) == 0)
 			correct_path = ft_strdup(data.paths[i]);
 		i++;
 	}

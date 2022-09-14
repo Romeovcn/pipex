@@ -42,6 +42,7 @@ ${NAME}: ${OBJS_DIR} ${OBJS} ${HEADERS} ${LIB}
 all: ${NAME}
 
 $(OBJS_DIR):
+	@echo "\033[33mCompiling Pipex..."
 	@mkdir ${OBJS_DIR}
 
 ${LIB}:

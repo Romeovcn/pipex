@@ -6,24 +6,21 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/13 19:33:05 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/14 22:39:17 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
+#include "libft/libft.h"
 
-int	ft_strmatch(char *str1, char *str2)
+int	get_first_cmd_index(char **argv)
 {
-	if (!str1 || !str2)
-		return (0);
-	while (*str1 && *str2 && *str1 == *str2)
-	{
-		str1++;
-		str2++;
-	}
-	if (*str1 != 0 || *str2 != 0)
-		return (0);
-	return (1);
+	int	i;
+
+	i = 2;
+	if (ft_strmatch(argv[1], "here_doc"))
+		i = 3;
+	return (i);
 }
 
 void	get_fds(t_data *data, char **argv, int argc)
@@ -45,6 +42,8 @@ void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
 	if (data->pid_1 == 0)
 	{
 		data->options = ft_split(argv[i], ' ');
+		if (data->options == NULL)
+			exit (1);
 		data->correct_path = get_correct_path(*data);
 		if (argv[i + 2] == 0)
 			dup2(data->out_fd, 1);
@@ -58,8 +57,6 @@ void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
 	dup2(data->pipe_fd[0], 0);
 	close(data->pipe_fd[0]);
 	close(data->pipe_fd[1]);
-	waitpid(data->pid_1, &data->status, 0);
-	manage_response_status(*data, argv[i]);
 }
 
 void	get_here_doc(t_data data, char *sep)
@@ -69,6 +66,8 @@ void	get_here_doc(t_data data, char *sep)
 	char	*sepator;
 
 	sepator = ft_strjoin(sep, "\n");
+	if (sepator == NULL)
+		exit (1);
 	fd = 0;
 	while (1)
 	{
@@ -102,11 +101,12 @@ int	main(int argc, char **argv, char **envp)
 		get_here_doc(data, argv[2]);
 	data.paths = get_paths(envp);
 	dup2(data.in_fd, 0);
-	i = 2;
-	if (ft_strmatch(argv[1], "here_doc"))
-		i = 3;
+	i = get_first_cmd_index(argv);
 	while (i < argc - 1)
 		create_child_and_exec(&data, argv, i++, envp);
+	i = get_first_cmd_index(argv);
+	while (wait(&data.status) > 0)
+		manage_response_status(data, argv[i++]);
 	unlink(".here_doc");
 	free_string_array(data.paths);
 	close(data.out_fd);
