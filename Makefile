@@ -2,6 +2,8 @@ SRCS_DIR = srcs
 
 OBJS_DIR = objs
 
+OBJSBONUS_DIR = objs_bonus
+
 SRCSBONUS_DIR = srcs_bonus
 
 SRCS	=	pipex.c \
@@ -18,7 +20,7 @@ LIB = ./libft/libft.a
 
 OBJS = ${patsubst %.c,${OBJS_DIR}/%.o,${SRCS}}
 
-OBJS_BONUS = ${patsubst %.c,${OBJS_DIR}/%.o,${SRCS_BONUS}}
+OBJS_BONUS = ${patsubst %.c,${OBJSBONUS_DIR}/%.o,${SRCS_BONUS}}
 
 HEADERS = pipex.h
 
@@ -41,9 +43,13 @@ ${NAME}: ${OBJS_DIR} ${OBJS} ${HEADERS} ${LIB}
 
 all: ${NAME}
 
-$(OBJS_DIR):
+${OBJS_DIR}:
+	@mkdir -p ${OBJS_DIR}
 	@echo "\033[33mCompiling Pipex..."
-	@mkdir ${OBJS_DIR}
+
+${OBJSBONUS_DIR}:
+	@mkdir -p ${OBJSBONUS_DIR}
+	@echo "\033[33mCompiling Pipex..."
 
 ${LIB}:
 	@make -sC ./libft
@@ -51,11 +57,12 @@ ${LIB}:
 ${OBJS_DIR}/%.o: ${SRCS_DIR}/%.c
 	@${CC} ${CFLAGS} -I. -c $< -o $@
 
-${OBJS_DIR}/%.o: ${SRCSBONUS_DIR}/%.c
+${OBJSBONUS_DIR}/%.o: ${SRCSBONUS_DIR}/%.c
 	@${CC} ${CFLAGS} -I. -c $< -o $@
 
 clean:
 	@make clean -sC ./libft
+	@rm -rf ${OBJSBONUS_DIR}
 	@rm -rf ${OBJS_DIR}
 
 fclean: clean
@@ -64,7 +71,8 @@ fclean: clean
 
 re: fclean all
 
-bonus: ${OBJS_DIR} ${OBJS_BONUS} ${HEADERS} ${LIB}
+bonus: ${OBJSBONUS_DIR} ${OBJS_BONUS} ${HEADERS_BONUS} ${LIB}
+	@rm -rf ${OBJS_DIR}
 	@${CC} ${CFLAGS} ${OBJS_BONUS} ${LIB} -o ${NAME_BONUS}
 	@echo "\033[32mBonus compiled !"
 	@echo "----------------------------\033[0m"

@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 13:13:04 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/14 21:42:56 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/16 01:12:57 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,10 +22,11 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 # include <unistd.h>
+#include <sys/time.h>
 
 typedef struct s_data
 {
-	pid_t	pid_1;
+	pid_t	pid[FD_SETSIZE];
 
 	int		status;
 

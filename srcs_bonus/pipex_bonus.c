@@ -6,12 +6,11 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/15 19:01:58 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/16 01:15:05 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
-#include "libft/libft.h"
 
 int	get_first_cmd_index(char **argv)
 {
@@ -41,10 +40,10 @@ void	get_fds(t_data *data, char **argv, int argc)
 void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
 {
 	pipe(data->pipe_fd);
-	data->pid_1 = fork();
-	if (data->pid_1 == -1)
+	data->pid[i] = fork();
+	if (data->pid[i] == -1)
 		exit(1);
-	if (data->pid_1 == 0)
+	if (data->pid[i] == 0)
 	{
 		data->options = ft_split(argv[i], ' ');
 		if (data->options == NULL)
@@ -110,12 +109,14 @@ int	main(int argc, char **argv, char **envp)
 	while (i < argc - 1)
 		create_child_and_exec(&data, argv, i++, envp);
 	i = get_first_cmd_index(argv);
-	while (wait(&data.status) > 0)
+	while (waitpid(data.pid[i], &data.status, 0) > 0)
 		manage_response_status(data, argv[i++]);
 	unlink(".here_doc");
 	free_string_array(data.paths);
 	close(data.out_fd);
 	close(data.in_fd);
 	exit(WEXITSTATUS(data.status));
+	
+	
 }
 //valgrind --track-fds=yes

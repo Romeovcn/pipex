@@ -3,6 +3,11 @@
 		"libft.h": "c",
 		"pipex_bonus.h": "c",
 		"unistd.h": "c",
-		"string.h": "c"
+		"string.h": "c",
+		"wait.h": "c",
+		"errno.h": "c",
+		"stdio.h": "c",
+		"time.h": "c",
+		"types.h": "c"
 	}
 }
