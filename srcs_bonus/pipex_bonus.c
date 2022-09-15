@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/14 22:39:17 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/15 19:01:58 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,15 @@ int	get_first_cmd_index(char **argv)
 void	get_fds(t_data *data, char **argv, int argc)
 {
 	if (ft_strmatch(argv[1], "here_doc"))
+	{
 		(*data).in_fd = open(".here_doc", O_CREAT | O_WRONLY | O_TRUNC, 0666);
+		(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_APPEND, 0644);
+	}
 	else
+	{
 		(*data).in_fd = open(argv[1], O_RDONLY);
-	(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
+		(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	}
 	check_fds_error(*data, argc, argv);
 }
 
