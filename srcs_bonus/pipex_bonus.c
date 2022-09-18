@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/16 01:15:05 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/18 17:59:12 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,8 @@ void	get_fds(t_data *data, char **argv, int argc)
 	if (ft_strmatch(argv[1], "here_doc"))
 	{
 		(*data).in_fd = open(".here_doc", O_CREAT | O_WRONLY | O_TRUNC, 0666);
-		(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_APPEND, 0644);
+		(*data).out_fd = open(argv[argc - 1], O_CREAT | O_RDWR | O_APPEND,
+				0644);
 	}
 	else
 	{
@@ -47,7 +48,7 @@ void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
 	{
 		data->options = ft_split(argv[i], ' ');
 		if (data->options == NULL)
-			exit (1);
+			exit(1);
 		data->correct_path = get_correct_path(*data);
 		if (argv[i + 2] == 0)
 			dup2(data->out_fd, 1);
@@ -71,7 +72,7 @@ void	get_here_doc(t_data data, char *sep)
 
 	sepator = ft_strjoin(sep, "\n");
 	if (sepator == NULL)
-		exit (1);
+		exit(1);
 	fd = 0;
 	while (1)
 	{
@@ -109,14 +110,13 @@ int	main(int argc, char **argv, char **envp)
 	while (i < argc - 1)
 		create_child_and_exec(&data, argv, i++, envp);
 	i = get_first_cmd_index(argv);
-	while (waitpid(data.pid[i], &data.status, 0) > 0)
+	while (i < argc - 1 && waitpid(data.pid[i], &data.status, 0) > 0)
 		manage_response_status(data, argv[i++]);
-	unlink(".here_doc");
+	if (ft_strmatch(argv[1], "here_doc"))
+		unlink(".here_doc");
 	free_string_array(data.paths);
 	close(data.out_fd);
 	close(data.in_fd);
 	exit(WEXITSTATUS(data.status));
-	
-	
 }
 //valgrind --track-fds=yes
