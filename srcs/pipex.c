@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/21 23:53:47 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/23 18:39:59 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,7 @@ void	first_child(t_data *data, char **argv, char **envp)
 {
 	data->pid_1 = fork();
 	if (data->pid_1 == -1)
-	{
 		exit(1);
-	}
 	if (data->pid_1 == 0)
 	{
 		if (data->in_fd == -1)

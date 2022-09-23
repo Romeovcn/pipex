@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:45 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/16 00:07:08 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/23 17:31:53 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ char	*get_correct_path(t_data data)
 	i = 0;
 	if (data.options[0] && access(data.options[0], F_OK | X_OK) == 0)
 		correct_path = ft_strdup(data.options[0]);
+	else if (data.options[0] && access(data.options[0], F_OK) == 0)
+		exit(126);
 	while (data.paths[i] && data.options[0] && correct_path == NULL)
 	{
 		data.paths[i] = get_command_path(data.paths[i], data.options[0]);

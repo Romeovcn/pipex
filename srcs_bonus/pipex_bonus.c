@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/18 18:11:43 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/23 16:47:24 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,8 @@ void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
 		exit(1);
 	if (data->pid[i] == 0)
 	{
+		if (data->in_fd == -1 && i == 2)
+			exit(0);
 		data->options = ft_split(argv[i], ' ');
 		if (data->options == NULL)
 			exit(1);

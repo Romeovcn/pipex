@@ -6,28 +6,42 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:57:10 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/21 22:11:22 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/23 18:29:33 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "pipex_bonus.h"
 
-void	manage_response_status(t_data data, char *command)
+void	manage_response_status(t_data data, char *command_line)
 {
-	if (WEXITSTATUS(data.status) == 127)
+	char	**command;
+
+	command = ft_split(command_line, ' ');
+	if (WEXITSTATUS(data.status) == 127 && ft_strchr(command[0], '/'))
 	{
-		ft_putstr_fd("Command not found : ", 2);
-		ft_putstr_fd(command, 2);
+		ft_putstr_fd("No such file or directory : ", 2);
+		ft_putstr_fd(command[0], 2);
 		ft_putstr_fd("\n", 2);
 	}
+	else if (WEXITSTATUS(data.status) == 127)
+	{
+		ft_putstr_fd("Command not found : ", 2);
+		ft_putstr_fd(command[0], 2);
+		ft_putstr_fd("\n", 2);
+	}
+	else if (WEXITSTATUS(data.status) == 126)
+	{
+		ft_putstr_fd("Permission denied : ", 2);
+		ft_putstr_fd(command[0], 2);
+		ft_putstr_fd("\n", 2);
+	}
+	free_string_array(command);
 }
 
 void	check_fds_error(t_data data, int argc, char **argv)
 {
 	if (data.in_fd == -1)
 	{
-		if (data.out_fd != -1)
-			close(data.out_fd);
 		ft_putstr_fd(strerror(errno), 2);
 		ft_putstr_fd(" : ", 2);
 		ft_putstr_fd(argv[1], 2);
@@ -35,14 +49,9 @@ void	check_fds_error(t_data data, int argc, char **argv)
 	}
 	if (data.out_fd == -1)
 	{
-		if (data.in_fd != -1)
-			close(data.in_fd);
 		ft_putstr_fd(strerror(errno), 2);
 		ft_putstr_fd(" : ", 2);
 		ft_putstr_fd(argv[argc - 1], 2);
 		ft_putstr_fd("\n", 2);
-		exit(1);
 	}
-	if (data.in_fd == -1)
-		exit(1);
 }
