@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/23 16:47:24 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/23 23:26:58 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,31 @@ void	get_fds(t_data *data, char **argv, int argc)
 
 void	create_child_and_exec(t_data *data, char **argv, int i, char **envp)
 {
-	pipe(data->pipe_fd);
+	if (pipe(data->pipe_fd) == -1)
+	{
+		if (data->in_fd != -1)
+			close(data->in_fd);
+		if (data->out_fd != -1)
+			close(data->out_fd);
+		free_string_array(data->paths);
+		exit(1);
+	}
 	data->pid[i] = fork();
 	if (data->pid[i] == -1)
+	{
+		close_fds(*data);
+		free_string_array(data->paths);
 		exit(1);
+	}
 	if (data->pid[i] == 0)
 	{
-		if (data->in_fd == -1 && i == 2)
-			exit(0);
+		if ((data->in_fd == -1 && i == 2) || (data->out_fd == -1 && !argv[i
+					+ 2]))
+		{
+			close_fds(*data);
+			free_string_array(data->paths);
+			exit(1);
+		}
 		data->options = ft_split(argv[i], ' ');
 		if (data->options == NULL)
 			exit(1);
@@ -117,8 +134,10 @@ int	main(int argc, char **argv, char **envp)
 	if (ft_strmatch(argv[1], "here_doc"))
 		unlink(".here_doc");
 	free_string_array(data.paths);
-	close(data.out_fd);
-	close(data.in_fd);
+	if (data.out_fd != -1)
+		close(data.out_fd);
+	if (data.in_fd != -1)
+		close(data.in_fd);
 	exit(WEXITSTATUS(data.status));
 }
 //valgrind --track-fds=yes

@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/23 18:39:59 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/23 23:25:36 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,11 +16,19 @@ void	first_child(t_data *data, char **argv, char **envp)
 {
 	data->pid_1 = fork();
 	if (data->pid_1 == -1)
+	{
+		close_fds(*data);
+		free_string_array(data->paths);
 		exit(1);
+	}
 	if (data->pid_1 == 0)
 	{
 		if (data->in_fd == -1)
-			exit(0);
+		{
+			close_fds(*data);
+			free_string_array(data->paths);
+			exit(1);
+		}
 		data->options = ft_split(argv[2], ' ');
 		if (data->options == NULL)
 			exit(1);
@@ -38,11 +46,19 @@ void	second_child(t_data *data, char **argv, char **envp)
 {
 	data->pid_2 = fork();
 	if (data->pid_2 == -1)
+	{
+		close_fds(*data);
+		free_string_array(data->paths);
 		exit(1);
+	}
 	if (data->pid_2 == 0)
 	{
 		if (data->out_fd == -1)
+		{
+			close_fds(*data);
+			free_string_array(data->paths);
 			exit(1);
+		}
 		data->options = ft_split(argv[3], ' ');
 		if (data->options == NULL)
 			exit(1);
@@ -58,14 +74,15 @@ void	second_child(t_data *data, char **argv, char **envp)
 
 void	get_fds(t_data *data, char **argv)
 {
-	(*data).in_fd = open(argv[1], O_RDONLY);
-	(*data).out_fd = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
+	data->in_fd = open(argv[1], O_RDONLY);
+	data->out_fd = open(argv[4], O_CREAT | O_RDWR | O_TRUNC, 0644);
 	check_fds_error(*data, argv);
-	if (pipe((*data).pipe_fd) == -1)
+	if (pipe(data->pipe_fd) == -1)
 	{
-		close((*data).in_fd);
-		close((*data).out_fd);
-		free_string_array((*data).paths);
+		if (data->in_fd != -1)
+			close(data->in_fd);
+		if (data->out_fd != -1)
+			close(data->out_fd);
 		ft_putstr_fd("Couldn't open pipe.\n", 2);
 		exit(1);
 	}
@@ -85,10 +102,10 @@ int	main(int argc, char **argv, char **envp)
 	first_child(&data, argv, envp);
 	second_child(&data, argv, envp);
 	close_fds(data);
-	waitpid(data.pid_1, &data.status, 0);
-	manage_response_status(data, argv[2]);
-	waitpid(data.pid_2, &data.status, 0);
-	manage_response_status(data, argv[3]);
+	if (waitpid(data.pid_1, &data.status, 0) > 0)
+		manage_response_status(data, argv[2]);
+	if (waitpid(data.pid_2, &data.status, 0) > 0)
+		manage_response_status(data, argv[3]);
 	free_string_array(data.paths);
 	exit(WEXITSTATUS(data.status));
 }
