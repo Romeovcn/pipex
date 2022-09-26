@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:45 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/23 22:13:44 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/26 22:01:41 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,13 +72,6 @@ char	*get_correct_path(t_data data)
 	i = 0;
 	if (data.options[0] && access(data.options[0], F_OK | X_OK) == 0)
 		correct_path = ft_strdup(data.options[0]);
-	else if (data.options[0] && access(data.options[0], F_OK) == 0)
-	{
-		free_string_array(data.paths);
-		free_string_array(data.options);
-		close_fds(data);
-		exit(126);
-	}
 	while (data.paths[i] && data.options[0] && correct_path == NULL)
 	{
 		data.paths[i] = get_command_path(data.paths[i], data.options[0]);
@@ -89,6 +82,9 @@ char	*get_correct_path(t_data data)
 	free_string_array(data.paths);
 	if (correct_path == NULL)
 	{
+		if (data.options[0] && access(data.options[0], F_OK) == 0)
+			return (free_string_array(data.options), close_fds(data), exit(126),
+				NULL);
 		free_string_array(data.options);
 		close_fds(data);
 		exit(127);

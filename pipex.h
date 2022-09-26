@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/24 14:52:17 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/23 18:26:49 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/26 22:13:03 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,5 +50,6 @@ void		close_fds(t_data data);
 
 void		manage_response_status(t_data data, char *command_line);
 void		check_fds_error(t_data data, char **argv);
+void		check_fork_error(pid_t pid, t_data data);
 
 #endif

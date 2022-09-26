@@ -14,7 +14,8 @@ SRCS	=	pipex.c \
 SRCS_BONUS =	pipex_bonus.c \
 				get_path_bonus.c \
 				free_and_exit_bonus.c \
-				error_bonus.c
+				error_bonus.c \
+				utils_bonus.c
 
 LIB = ./libft/libft.a
 
@@ -32,7 +33,7 @@ NAME_BONUS = pipex
 
 CC = gcc
 
-CFLAGS = -Wall -Werror -Wextra  
+CFLAGS = 
 
 # -- RULES -- #
 

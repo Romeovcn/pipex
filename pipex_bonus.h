@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 13:13:04 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/23 18:28:25 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/26 22:25:33 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,15 +40,24 @@ typedef struct s_data
 
 	char	**options;
 }			t_data;
-
+// Get path
 char		**get_paths(char **envp);
 char		*get_command_path(char *path, char *command);
 char		*get_correct_path(t_data data);
-
-void		free_string_array(char **array);
+// Free and exit
+void		close_pipes(t_data data);
+void		close_files(t_data data);
 void		close_fds(t_data data);
-
+void		free_and_exit_child(t_data data);
+void		pipe_error(t_data data);
+// Error
 void		manage_response_status(t_data data, char *command_line);
 void		check_fds_error(t_data data, int argc, char **argv);
+
+// Utils
+void		free_string_array(char **array);
+int			get_first_cmd_index(char **argv);
+void		get_fds(t_data *data, char **argv, int argc);
+void		get_here_doc(t_data data, char *sep);
 
 #endif

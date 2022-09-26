@@ -6,7 +6,7 @@
 /*   By: rvincent <rvincent@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 15:48:41 by rvincent          #+#    #+#             */
-/*   Updated: 2022/09/23 23:25:36 by rvincent         ###   ########.fr       */
+/*   Updated: 2022/09/26 22:14:12 by rvincent         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,7 @@
 void	first_child(t_data *data, char **argv, char **envp)
 {
 	data->pid_1 = fork();
-	if (data->pid_1 == -1)
-	{
-		close_fds(*data);
-		free_string_array(data->paths);
-		exit(1);
-	}
+	check_fork_error(data->pid_1, *data);
 	if (data->pid_1 == 0)
 	{
 		if (data->in_fd == -1)
@@ -45,12 +40,7 @@ void	first_child(t_data *data, char **argv, char **envp)
 void	second_child(t_data *data, char **argv, char **envp)
 {
 	data->pid_2 = fork();
-	if (data->pid_2 == -1)
-	{
-		close_fds(*data);
-		free_string_array(data->paths);
-		exit(1);
-	}
+	check_fork_error(data->pid_2, *data);
 	if (data->pid_2 == 0)
 	{
 		if (data->out_fd == -1)
