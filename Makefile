@@ -33,7 +33,7 @@ NAME_BONUS = pipex
 
 CC = gcc
 
-CFLAGS = 
+CFLAGS = -Werror -Wall -Wextra
 
 # -- RULES -- #
 
