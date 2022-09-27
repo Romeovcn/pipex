@@ -72,7 +72,8 @@ char	*get_correct_path(t_data data)
 	i = 0;
 	if (data.options[0] && access(data.options[0], F_OK | X_OK) == 0)
 		correct_path = ft_strdup(data.options[0]);
-	while (data.paths[i] && data.options[0] && correct_path == NULL)
+	while (data.paths[i] && data.options[0] && correct_path == NULL
+		&& !ft_strchr(data.options[0], '/'))
 	{
 		data.paths[i] = get_command_path(data.paths[i], data.options[0]);
 		if (data.paths[i] && access(data.paths[i], F_OK | X_OK) == 0)
@@ -85,9 +86,8 @@ char	*get_correct_path(t_data data)
 		if (data.options[0] && access(data.options[0], F_OK) == 0)
 			return (free_string_array(data.options), close_fds(data), exit(126),
 				NULL);
-		free_string_array(data.options);
-		close_fds(data);
-		exit(127);
+		return (free_string_array(data.options), close_fds(data), exit(127),
+			NULL);
 	}
 	return (correct_path);
 }
